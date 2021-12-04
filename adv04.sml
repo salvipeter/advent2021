@@ -10,9 +10,9 @@ fun contains nums x = List.exists (fn y => x = y) nums
 
 fun bingo nums board =
     let val win = List.all (contains nums)
-        val rows = map (win o takeRow board) [0,1,2,3,4]
-        val cols = map (win o takeCol board) [0,1,2,3,4]
-    in List.exists (fn x => x) (rows @ cols) end
+        val rows = map (takeRow board) [0,1,2,3,4]
+        val cols = map (takeCol board) [0,1,2,3,4]
+    in List.exists win (rows @ cols) end
 
 fun findFirst _ [] = NONE
   | findFirst bs xs =

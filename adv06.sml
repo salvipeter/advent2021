@@ -2,21 +2,24 @@
 
 val fish = [3,4,3,1,2,1,5,1,1,1,1,4,1,2,1,1,2,1,1,1,3,4,4,4,1,3,2,1,3,4,1,1,3,4,2,5,5,3,3,3,5,1,4,1,2,3,1,1,1,4,1,4,1,5,3,3,1,4,1,5,1,2,2,1,1,5,5,2,5,1,1,1,1,3,1,4,1,1,1,4,1,1,1,5,2,3,5,3,4,1,1,1,1,1,2,2,1,1,1,1,1,1,5,5,1,3,3,1,2,1,3,1,5,1,1,4,1,1,2,4,1,5,1,1,3,3,3,4,2,4,1,1,5,1,1,1,1,4,4,1,1,1,3,1,1,2,1,3,1,1,1,1,5,3,3,2,2,1,4,3,3,2,1,3,3,1,2,5,1,3,5,2,2,1,1,1,1,5,1,2,1,1,3,5,4,2,3,1,1,1,4,1,3,2,1,5,4,5,1,4,5,1,3,3,5,1,2,1,1,3,3,1,5,3,1,1,1,3,2,5,5,1,1,4,2,1,2,1,1,5,5,1,4,1,1,3,1,5,2,5,3,1,5,2,2,1,1,5,1,5,1,2,1,3,1,1,1,2,3,2,1,4,1,1,1,1,5,4,1,4,5,1,4,3,4,1,1,1,1,2,5,4,1,1,3,1,2,1,1,2,1,1,1,2,1,1,1,1,1,4]
 
-fun births 0 _ = 1
-  | births k 0 = births (k-1) 6 + births (k-1) 8
-  | births k n = births (k-1) (n-1)
+fun births k n =
+    let fun f 0 = 1
+          | f k = if k < 0 then 1
+                  else f (k-7) + f (k-9)
+    in f (k-n) end
 
 val adv06 = foldl op + 0 (map (births 80) fish)
 
-(* Same, but memoized for n = 1 *)
+(* Same, but memoized *)
 local val cache = Array.array (256, NONE)
-in fun births' 0 _ = 1
-     | births' k 0 = births' (k-1) 6 + births' (k-1) 8
-     | births' k 1 = ( case Array.sub (cache, k-1) of
-                           NONE   => let val b = births' (k-1) 0
-                                     in Array.update (cache, k-1, SOME b); b end
-                         | SOME b => b )
-     | births' k n = births' (k-1) (n-1)
+in fun births' k n =
+       let fun f 0 = 1
+             | f k = if k < 0 then 1
+                     else case Array.sub (cache, k) of
+                              NONE   => let val b = f (k-7) + f (k-9)
+                                        in Array.update (cache, k, SOME b); b end
+                            | SOME b => b
+       in f (k-n) end
 end
 
 val adv06b = foldl op + 0 (map (births' 256) fish)

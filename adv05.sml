@@ -5,12 +5,12 @@ val vents = [((609,916),(60,367)),((349,494),(682,494)),((75,370),(397,370)),((5
 val part2 = ref false
 
 fun points ((x1,y1),(x2,y2)) =
-    if x1 = x2 then List.tabulate (abs (y2 - y1) + 1, fn y => (x1, Int.min (y1,y2) + y))
-    else if y1 = y2 then List.tabulate (abs (x2 - x1) + 1, fn x => (Int.min (x1,x2) + x, y1))
-    else if not (!part2) then []
+    if not (!part2 orelse x1 = x2 orelse y1 = y2) then []
     else let val sx = Int.sign (x2 - x1)
              val sy = Int.sign (y2 - y1)
-         in List.tabulate (abs (x2 - x1) + 1, fn d => (x1 + sx * d, y1 + sy * d)) end
+             val n = Int.max (Int.abs (x2 - x1), Int.abs (y2 - y1)) + 1
+             fun line d = (x1 + sx * d, y1 + sy * d)
+         in List.tabulate (n, line) end
 
 fun inLine (x,y) ((x1,y1),(x2,y2)) =
     Int.min (y1,y2) <= y andalso y <= Int.max (y1,y2) andalso

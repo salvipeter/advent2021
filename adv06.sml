@@ -21,4 +21,11 @@ in fun births' k n =
        in f (k-n) end
 end
 
-val adv06b = foldl op + 0 (map (births' 256) fish)
+(* Solution using tail-recursion *)
+fun births'' k n =
+    let fun f 0 (x::_) = x
+          | f k xs = let val next = List.nth (xs,6) + List.nth (xs,8)
+                     in f (k-1) (List.take (next::xs,9)) end
+    in f (k-n) [1,1,1,1,1,1,1,1,1] end
+
+val adv06b = foldl op + 0 (map (births'' 256) fish)

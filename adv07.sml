@@ -10,11 +10,13 @@ fun distance x y =
 
 fun movement xs y = foldl op + 0 (map (distance y) xs)
 
+fun reduce f xs = foldl f (hd xs) (tl xs)
+
 fun adv07 p = (* p is false for part 1, true for part 2 *)
     ( part2 := p;
-      let val min = foldl Int.min 0 crabs
-          val max = foldl Int.max 0 crabs
+      let val min = reduce Int.min crabs
+          val max = reduce Int.max crabs
           val positions = List.tabulate (max - min + 1, fn i => min + i)
           val distances = map (movement crabs) positions
-      in foldl Int.min (hd distances) (tl distances) end
+      in reduce Int.min distances end
     )

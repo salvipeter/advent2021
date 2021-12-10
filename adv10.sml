@@ -10,7 +10,7 @@ fun pair #"(" = #")"
   | pair #"<" = #">"
   | pair   _  = raise Fail "not a valid chunk opening"
 
-fun score line =
+fun checkSyntax line =
     let val n = size line
         fun f i p =
             if i = n then Incomplete p
@@ -31,7 +31,7 @@ fun charScore #")" = 3
   | charScore   _  = raise Fail "not a valid chunk closing"
 
 val adv10 =
-    let fun f chunk = case score chunk of
+    let fun f chunk = case checkSyntax chunk of
                           Corrupted  c => charScore c
                         | Incomplete _ => 0
     in foldl op + 0 (map f chunks) end
@@ -51,7 +51,7 @@ fun chooseMiddle xs =
     in List.nth (sorted, length xs div 2) end
 
 val adv10b =
-    let fun f chunk = case score chunk of
+    let fun f chunk = case checkSyntax chunk of
                           Corrupted  _  => NONE
                         | Incomplete xs => SOME (completingScore xs)
     in chooseMiddle (List.mapPartial f chunks) end

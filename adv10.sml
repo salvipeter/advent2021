@@ -12,15 +12,15 @@ fun pair #"(" = #")"
 
 fun checkSyntax line =
     let val n = size line
-        fun f i p =
-            if i = n then Incomplete p
+        fun f i xs =
+            if i = n then Incomplete xs
             else let val c = String.sub (line, i)
                  in if Char.contains "([{<" c then
-                        f (i+1) (pair c :: p)
-                    else if p = [] orelse hd p <> c then
+                        f (i+1) (pair c :: xs)
+                    else if xs = [] orelse hd xs <> c then
                         Corrupted c
                     else
-                        f (i+1) (tl p)
+                        f (i+1) (tl xs)
                  end
     in f 0 [] end
 

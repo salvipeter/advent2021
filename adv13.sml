@@ -11,7 +11,7 @@ fun fold (FoldX n, xs) = map (fn (x,y) => if x > n then (n-(x-n),y) else (x,y)) 
 
 fun countPoints ([]: point list) = 0
   | countPoints (x::xs) =
-    countPoints xs + (if List.find (fn y => x = y) xs = NONE then 1 else 0)
+    countPoints xs + (if List.exists (fn y => x = y) xs then 0 else 1)
 
 val adv13 = (countPoints o fold) (hd folds, points)
 
@@ -21,9 +21,9 @@ fun showPoints (maxx, maxy) ps =
     in while !y <= maxy do (
            x := 0
          ; while !x <= maxx do (
-               if List.find (fn p => p = (!x,!y)) ps = NONE
-               then print "."
-               else print "#"
+               if List.exists (fn p => p = (!x,!y)) ps
+               then print "#"
+               else print "."
              ; x := !x + 1
            )
          ; print "\n"

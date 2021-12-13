@@ -14,7 +14,7 @@ fun adjacent (pos: cave) caves =
 fun notStart x = x <> Start
 
 fun visitable visited (s: string) =
-    List.find (fn x => s = x) visited = NONE
+    not (List.exists (fn x => s = x) visited)
 
 fun path xs =
     let val count = ref 0

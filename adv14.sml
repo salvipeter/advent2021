@@ -34,7 +34,7 @@ fun step rmap cmap =
     in StringMap.foldli f cmap cmap end
 
 (*
-  The start- and end-characters of the original template count only once,
+  The start- and end-characters of the original template are counted only once,
   all other characters in the pairs are counted twice.
 *)
 fun score original cmap =
@@ -52,6 +52,7 @@ fun score original cmap =
         val min = StringMap.foldl Int.min max m
     in (max - min) div 2 end
 
+(* Call with 10 for part 1, and with 40 for part 2 *)
 fun adv14 iterations =
     let fun f ((str,c), m) = StringMap.insert (m, str, c)
         val rmap = foldl f StringMap.empty rules

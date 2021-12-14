@@ -11,14 +11,16 @@ structure StringOrd: ORD_KEY =
   end
 structure StringMap: ORD_MAP = ListMapFn (StringOrd)
 
+(* Convenience function - takes (map, key, value) *)
+val add = StringMap.insertWith (op +)
+
 (* Initializes a (letter pair -> count) map *)
 fun initCounts str =
     let val n = size str
         fun f m i =
             if i = n - 1 then m
             else let val s = substring (str, i, 2)
-                     val m' = StringMap.insertWith (op +) (m, s, 1)
-                 in f m' (i+1) end
+                 in f (add (m, s, 1)) (i+1) end
     in f StringMap.empty 0 end
 
 (* Executes one step with the given rule- and count-maps *)
@@ -27,9 +29,9 @@ fun step rmap cmap =
             let val c     = StringMap.lookup (rmap, str)
                 val left  = implode [String.sub (str,0), c]
                 val right = implode [c, String.sub (str,1)]
-                val m = StringMap.insertWith (op +) (m, left,  n)
-                val m = StringMap.insertWith (op +) (m, str,  ~n)
-                val m = StringMap.insertWith (op +) (m, right, n)
+                val m = add (m, left,  n)
+                val m = add (m, str,  ~n)
+                val m = add (m, right, n)
             in m end
     in StringMap.foldli f cmap cmap end
 
@@ -41,11 +43,11 @@ fun score original cmap =
     let val c0 = String.sub (original, 0)
         val cn = String.sub (original, size original - 1)
         val s  = StringMap.empty
-        val s  = StringMap.insertWith (op +) (s, str c0, 1)
-        val s  = StringMap.insertWith (op +) (s, str cn, 1)
+        val s  = add (s, str c0, 1)
+        val s  = add (s, str cn, 1)
         fun f (str, n, m) =
-            let val m = StringMap.insertWith (op +) (m, substring (str,0,1), n)
-                val m = StringMap.insertWith (op +) (m, substring (str,1,1), n)
+            let val m = add (m, substring (str,0,1), n)
+                val m = add (m, substring (str,1,1), n)
             in m end
         val m   = StringMap.foldli f s cmap
         val max = StringMap.foldl Int.max  0  m

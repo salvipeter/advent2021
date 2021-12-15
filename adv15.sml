@@ -24,24 +24,18 @@ fun distances (x, y) =
     let val m = Array2.array (size, size, NONE)
         val region = { base = m, row = 0, col = 0,
                        nrows = SOME size, ncols = SOME size }
-        val changed = ref false
-        fun repeat f = (
-            changed := false;
-            f ();
-            if !changed then repeat f else ()
-          )
-        fun update d (x,y) =
+        fun update d ((x,y), changed) =
             let val d' = d + risk (x,y)
                 val old = Array2.sub (m, x, y)
             in if d' < getOpt (old, d' + 1)
-               then ( changed := true; Array2.update (m, x, y, SOME d') )
-               else ()
+               then ( Array2.update (m, x, y, SOME d'); true )
+               else changed
             end
-        fun f (_,_,NONE)   = ()
-          | f (x,y,SOME d) = app (update d) (neighbors (x,y))
-        fun spread () = Array2.appi Array2.RowMajor f region
+        fun f (_,_,NONE,changed) = changed
+          | f (x,y,SOME d,changed) = foldl (update d) changed (neighbors (x,y))
+        fun spread () = Array2.foldi Array2.RowMajor f false region
     in Array2.update (m, x, y, SOME 0)
-     ; repeat spread
+     ; while spread () do ()
      ; m
     end
 

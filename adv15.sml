@@ -19,27 +19,29 @@ fun neighbors (x,y) =
     let fun valid (x,y) = x >= 0 andalso x < size andalso y >= 0 andalso y < size
     in List.filter valid [(x-1,y),(x+1,y),(x,y-1),(x,y+1)] end
 
-fun distances max start =
+(* Bellman-Ford algorithm; 2 * size iterations should be enough *)
+fun distances (x, y) =
     let val m = Array2.array (size, size, NONE)
-        val d0 = risk start
-        fun f d (x,y) =
+        val region = { base = m, row = 0, col = 0,
+                       nrows = SOME size, ncols = SOME size }
+        fun repeat 0 _ = ()
+          | repeat n f = ( f (); repeat (n-1) f )
+        fun update d (x,y) =
             let val d' = d + risk (x,y)
                 val old = Array2.sub (m, x, y)
-            in if d' < max andalso d' < getOpt (old, d' + 1)
-               then (
-                   Array2.update (m, x, y, SOME d');
-                   app (f d') (neighbors (x,y))
-               )
+            in if d' < getOpt (old, d' + 1)
+               then Array2.update (m, x, y, SOME d')
                else ()
             end
-    in f (~d0) start ; m end
+        fun f (_,_,NONE)   = ()
+          | f (x,y,SOME d) = app (update d) (neighbors (x,y))
+        fun spread () = Array2.appi Array2.RowMajor f region
+    in Array2.update (m, x, y, SOME 0)
+     ; repeat (2 * size) spread
+     ; m
+    end
 
-val adv15 =
-    let val n = size - 1
-        fun step i = [(i-1,i),(i,i)]
-        val diag = (List.concat o tl o List.tabulate) (size, step)
-        val max = foldl op + 0 (map risk diag)
-    in (valOf o Array2.sub) (distances max (0,0), n, n) end
+val adv15 = (valOf o Array2.sub) (distances (0,0), size-1, size-1)
 
-(* MLton finishes in ~2 minutes *)
+(* MLton finishes in 30s *)
 val () = ( print (Int.toString adv15) ; print "\n" )

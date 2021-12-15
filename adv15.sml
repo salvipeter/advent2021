@@ -19,29 +19,30 @@ fun neighbors (x,y) =
     let fun valid (x,y) = x >= 0 andalso x < size andalso y >= 0 andalso y < size
     in List.filter valid [(x-1,y),(x+1,y),(x,y-1),(x,y+1)] end
 
-(* Bellman-Ford algorithm; 2 * size iterations should be enough *)
+(* Bellman-Ford algorithm, exiting when there is no change *)
 fun distances (x, y) =
     let val m = Array2.array (size, size, NONE)
         val region = { base = m, row = 0, col = 0,
                        nrows = SOME size, ncols = SOME size }
-        fun repeat 0 _ = ()
-          | repeat n f = ( f (); repeat (n-1) f )
+        val changed = ref false
+        fun repeat f = (
+            changed := false;
+            f ();
+            if !changed then repeat f else ()
+          )
         fun update d (x,y) =
             let val d' = d + risk (x,y)
                 val old = Array2.sub (m, x, y)
             in if d' < getOpt (old, d' + 1)
-               then Array2.update (m, x, y, SOME d')
+               then ( changed := true; Array2.update (m, x, y, SOME d') )
                else ()
             end
         fun f (_,_,NONE)   = ()
           | f (x,y,SOME d) = app (update d) (neighbors (x,y))
         fun spread () = Array2.appi Array2.RowMajor f region
     in Array2.update (m, x, y, SOME 0)
-     ; repeat (2 * size) spread
+     ; repeat spread
      ; m
     end
 
 val adv15 = (valOf o Array2.sub) (distances (0,0), size-1, size-1)
-
-(* MLton finishes in 30s *)
-val () = ( print (Int.toString adv15) ; print "\n" )

@@ -41,11 +41,11 @@ fun readPacket i =
     in case getBits (i+3, 3) of
            4 => let val (lit, next) = readLiteral (i+6)
                 in (Packet (version, Literal lit), next) end
-         | t => let val (packets, next) = readOperator (i+6)
+         | t => let val (packets, next) = readSubPackets (i+6)
                     val operator = Operator (opType t, packets)
                 in (Packet (version, operator), next) end
     end
-and readOperator i =
+and readSubPackets i =
     if getBits (i, 1) = 0
     then let val len = getBits (i+1, 15)
              val packets = readUntil (i+16) (i+16+len)
@@ -74,7 +74,7 @@ fun evaluate (Packet p) =
     case p of
         (_, Literal n) => n
       | (_, Operator (operator,xs)) => evalOp operator xs
-and evalOp Sum xs     = foldl op + 0 (map evaluate xs)
+and evalOp Sum     xs = foldl op + 0 (map evaluate xs)
   | evalOp Product xs = foldl op * 1 (map evaluate xs)
   | evalOp Minimum xs = let val xs' = map evaluate xs
                         in foldl Int.min (hd xs') (tl xs') end
@@ -82,9 +82,9 @@ and evalOp Sum xs     = foldl op + 0 (map evaluate xs)
                         in foldl Int.max (hd xs') (tl xs') end
   | evalOp Greater xs = let val (x,y) = evalPair xs
                         in if x > y then 1 else 0 end
-  | evalOp Less xs    = let val (x,y) = evalPair xs
+  | evalOp Less    xs = let val (x,y) = evalPair xs
                         in if x < y then 1 else 0 end
-  | evalOp Equal xs   = let val (x,y) = evalPair xs
+  | evalOp Equal   xs = let val (x,y) = evalPair xs
                         in if x = y then 1 else 0 end
 and evalPair [x,y] = (evaluate x, evaluate y)
   | evalPair   _   = raise Fail "invalid operands"

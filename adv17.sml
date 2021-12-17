@@ -1,7 +1,5 @@
 val minx = 240 and maxx = 292 and miny = ~90 and maxy = ~57
 
-val large_number = 10000
-
 fun pos (dx,dy) t =
     (if t <= dx
      then dx * t - (t - 1) * t div 2
@@ -27,7 +25,7 @@ fun top d = pos d (#2 d)
 
 val adv17 =
     let val result = ref NONE
-        val dy = ref large_number
+        val dy = ref (abs miny)
     in while !result = NONE do let
            val mint = ceil  (findTime (!dy) maxy)
            val maxt = floor (findTime (!dy) miny)
@@ -51,7 +49,7 @@ fun unique ([]: (int * int) list) = []
 val adv17b =
     let val speeds = ref []
         val dy = ref miny
-    in while !dy < large_number do let
+    in while !dy < (abs miny) do let
            val mint = ceil  (findTime (!dy) maxy)
            val maxt = floor (findTime (!dy) miny)
            val t = ref mint

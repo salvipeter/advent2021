@@ -65,12 +65,15 @@ fun reduce x =
             SOME x' => reduce x'
           | NONE    => x
 
-fun add (x,y) = (reduce o Pair) (y,x)
+val add = reduce o Pair
 
 fun magnitude (Pair (x,y)) = 3 * magnitude x + 2 * magnitude y
-  | magnitude (Value x) = x
+  | magnitude (Value x)    = x
 
-fun magnitudeSum xs = magnitude (foldl add (hd xs) (tl xs))
+fun magnitudeSum xs = let
+    fun flippedAdd (a,b) = add (b,a)
+    val sum = foldl flippedAdd (hd xs) (tl xs)
+in magnitude sum end
 
 val adv18 = magnitudeSum numbers
 

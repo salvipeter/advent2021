@@ -51,25 +51,27 @@ fun findOverlap x ys = let
           | SOME (t,y') => SOME (t, y', acc @ ys)
 in f x ys [] end
 
-fun concatUnique ([]: point list) ys = ys
-  | concatUnique (x::xs) ys =
+fun concatUnique ([]: point list, ys) = ys
+  | concatUnique (x::xs, ys) =
     if List.exists (fn y => x = y) ys
-    then concatUnique xs ys
-    else x :: concatUnique xs ys
+    then concatUnique (xs, ys)
+    else x :: concatUnique (xs, ys)
 
-fun rotateAll x [] = x
-  | rotateAll x ys =
+fun rotateAll [] ys = rotateAll [hd ys] (tl ys)
+  | rotateAll xs [] = xs
+  | rotateAll (x::xs) ys =
     case findOverlap x ys of
-        NONE           => raise Fail "not enough overlap"
-      | SOME (_,y,ys') => rotateAll (concatUnique x y) ys'
+        NONE           => x :: rotateAll xs ys
+      | SOME (_,y,ys') => rotateAll (x::y::xs) ys'
 
-val adv19 = (length o rotateAll (hd scanners)) (tl scanners)
+val adv19 = (length o foldl concatUnique [] o rotateAll []) scanners
 
-fun positions x [] = [(0,0,0)]
-  | positions x ys =
+fun positions [] ys = positions [hd ys] (tl ys)
+  | positions xs [] = [(0,0,0)]
+  | positions (x::xs) ys =
     case findOverlap x ys of
-        NONE           => raise Fail "not enough overlap"
-      | SOME (t,y,ys') => t :: positions (concatUnique x y) ys'
+        NONE           => positions xs ys
+      | SOME (t,y,ys') => t :: positions (x::y::xs) ys'
 
 fun manhattan (x1,y1,z1) (x2,y2,z2) = abs (x1-x2) + abs (y1-y2) + abs (z1-z2)
 
@@ -77,4 +79,4 @@ fun maxDistance xs = let
     val dists = List.concat (map (fn x => map (fn y => manhattan x y) xs) xs)
 in foldl Int.max (hd dists) (tl dists) end
 
-val adv19b = (maxDistance o positions (hd scanners)) (tl scanners)
+val adv19b = (maxDistance o positions []) scanners

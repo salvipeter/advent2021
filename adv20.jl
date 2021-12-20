@@ -15,8 +15,11 @@ end
 function compute_index(def, arr, x, y)
     acc = 0
     for i in -1:1, j in -1:1
-        bit = try arr[x+i,y+j] catch; def end
-        acc = 2 * acc + bit
+        if x+i < 1 || x+i > size(arr, 1) || y+j < 1 || y+j > size(arr, 2)
+            acc = 2 * acc + def
+        else
+            acc = 2 * acc + arr[x+i,y+j]
+        end
     end
     acc
 end

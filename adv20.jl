@@ -42,8 +42,6 @@ function enhance(str, n, img)
     arr
 end
 
-# 17s - much slower than the SML version (0.1s)
-# maybe because of the lack of type declarations?
 function adv20()
     println(count(enhance(algorithm, 2, image)))
     println(count(enhance(algorithm, 50, image)))

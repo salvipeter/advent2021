@@ -7,32 +7,32 @@ val onoff = [(On,(~30,18),(~5,44),(~26,27)),(On,(~39,11),(~42,11),(~21,24)),(On,
 fun subtract off c = let
     val ((xmin,xmax),(ymin,ymax),(zmin,zmax)) = c
     val (_,(xmin',xmax'),(ymin',ymax'),(zmin',zmax')) = off
-in if xmax < xmin orelse ymax < ymin orelse zmax < zmin then []
+in if xmax < xmin orelse ymax < ymin orelse zmax < zmin then []    (* zero volume case *)
    else if xmax' < xmin orelse xmin' > xmax orelse
            ymax' < ymin orelse ymin' > ymax orelse
            zmax' < zmin orelse zmin' > zmax
-   then [c]
+   then [c]                                                        (* off is outside c *)
    else if xmin >= xmin' andalso xmax <= xmax' andalso
            ymin >= ymin' andalso ymax <= ymax' andalso
            zmin >= zmin' andalso zmax <= zmax'
-   then []
+   then []                                                         (* c is inside off  *)
    else if xmin < xmin' andalso xmin' <= xmax
-   then subtract off ((xmin,xmin'-1),(ymin,ymax),(zmin,zmax)) @
+   then subtract off ((xmin,xmin'-1),(ymin,ymax),(zmin,zmax)) @    (* split by xmin'   *)
         subtract off ((xmin',xmax),(ymin,ymax),(zmin,zmax))
    else if xmin <= xmax' andalso xmax' < xmax
-   then subtract off ((xmin,xmax'),(ymin,ymax),(zmin,zmax)) @
+   then subtract off ((xmin,xmax'),(ymin,ymax),(zmin,zmax)) @      (* split by xmax'   *)
         subtract off ((xmax'+1,xmax),(ymin,ymax),(zmin,zmax))
    else if ymin < ymin' andalso ymin' <= ymax
-   then subtract off ((xmin,xmax),(ymin,ymin'-1),(zmin,zmax)) @
+   then subtract off ((xmin,xmax),(ymin,ymin'-1),(zmin,zmax)) @    (* split by ymin'   *)
         subtract off ((xmin,xmax),(ymin',ymax),(zmin,zmax))
    else if ymin <= ymax' andalso ymax' < ymax
-   then subtract off ((xmin,xmax),(ymin,ymax'),(zmin,zmax)) @
+   then subtract off ((xmin,xmax),(ymin,ymax'),(zmin,zmax)) @      (* split by ymax'   *)
         subtract off ((xmin,xmax),(ymax'+1,ymax),(zmin,zmax))
    else if zmin < zmin' andalso zmin' <= zmax
-   then subtract off ((xmin,xmax),(ymin,ymax),(zmin,zmin'-1)) @
+   then subtract off ((xmin,xmax),(ymin,ymax),(zmin,zmin'-1)) @    (* split by zmin'   *)
         subtract off ((xmin,xmax),(ymin,ymax),(zmin',zmax))
    else if zmin <= zmax' andalso zmax' < zmax
-   then subtract off ((xmin,xmax),(ymin,ymax),(zmin,zmax')) @
+   then subtract off ((xmin,xmax),(ymin,ymax),(zmin,zmax')) @      (* split by zmax'   *)
         subtract off ((xmin,xmax),(ymin,ymax),(zmax'+1,zmax))
    else raise Fail "invalid configuration"
 end
@@ -40,7 +40,7 @@ end
 fun process (x, ys) = let
     val ys' = List.concat (map (subtract x) ys)
 in case x of
-       (On, xr, yr, zr) => (xr, yr, zr) :: ys'
+       (On, xr, yr, zr) => (xr, yr, zr) :: ys'  (* subtract x from everything, then add again *)
      | (Off, _,  _,  _) => ys'
 end
 

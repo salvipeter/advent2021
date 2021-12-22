@@ -52,6 +52,6 @@ fun in50 (_,(xmin,xmax),(ymin,ymax),(zmin,zmax)) =
 fun cuboidSize ((xmin,xmax),(ymin,ymax),(zmin,zmax)) =
     (xmax - xmin + 1) * (ymax - ymin + 1) * (zmax - zmin + 1)
 
-val adv22 = foldl op + 0 (map cuboidSize (foldl process [] (List.filter in50 onoff)))
+val adv22 = (foldl op + 0 o map cuboidSize o foldl process [] o List.filter in50) onoff
 
-val adv22b = foldl op + 0 (map cuboidSize (foldl process [] onoff))
+val adv22b = (foldl op + 0 o map cuboidSize o foldl process []) onoff

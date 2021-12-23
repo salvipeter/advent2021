@@ -1,0 +1,61 @@
+Paper-and-pencil solution
+
+  #############
+  #...........#
+  ###A#D#A#B###
+    #C#C#D#B#
+    #########
+
+Notations:
+
+  ..........................
+  ..l1l2  ab  bc  cd  r2r1..
+  ......a2..b2..c2..d2......
+      ..a1..b1..c1..d1..
+      ..................
+
+Two types of moves:
+1. Move an amphipod to its final position
+2. Bring out the top one from a room
+
+It is always good to do (1) when possible, so the only challenge is
+to choose which amphipod to move and where to move it, when (1) is not possible.
+
+A c2 -> l1    7
+B d2 -> r2   20
+B d1 -> ab   70
+D c1 -> d1 6000
+D b2 -> d2 6000
+C b1 -> c1  600
+B ab -> b1   30
+B r2 -> b2   60
+A a2 -> l2    2
+C a1 -> c2  700
+A l2 -> a1    3
+A l1 -> a2    3
+---------------
+          13495
+
+(This is 4 more steps for both A and B than the theoretical minimum.)
+
+Second part:
+
+  #############
+  #...........#
+  ###A#D#A#B###
+    #D#C#B#A#
+    #D#B#A#C#
+    #C#C#D#B#
+    #########
+
+Notations:
+
+  ..........................
+  ..l1l2  ab  bc  cd  r2r1..
+  ......a4..b4..c4..d4......
+      ..a3..b3..c3..d3..
+      ..a2..b2..c2..d2..
+      ..a1..b1..c1..d1..
+      ..................
+
+Minimum: A 34, B 32, C 33, D 38  (=> 41654)

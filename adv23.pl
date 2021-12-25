@@ -7,6 +7,14 @@
 %       ..a1..b1..c1..d1..
 %       ..................
 
+amphipods([a1-c,a2-d,a3-d,a4-a,
+           b1-c,b2-b,b3-c,b4-d,
+           c1-d,c2-a,c3-b,c4-a,
+           d1-b,d2-c,d3-a,d4-b]).
+
+% Slow
+adv23(X) :- amphipods(A), solution(A, 0, X).
+
 % solution(State, A, A) :- solved(State).
 solution(State, A, _) :- solved(State), print(A), nl, fail.
 solution(State, A, X) :-
@@ -34,7 +42,7 @@ move(State, C, State1) :-
 
 ownroom(a, [a1,a2,a3,a4]).
 ownroom(b, [b1,b2,b3,b4]).
-ownroom(c, [c2,c2,c3,c4]).
+ownroom(c, [c1,c2,c3,c4]).
 ownroom(d, [d1,d2,d3,d4]).
 
 solved(State) :-
@@ -78,10 +86,3 @@ route([c1,c2,c3,c4,x,bc,x,ab,x,l2,l1]).
 route([c1,c2,c3,c4,x,cd,x,r2,r1]).
 route([d1,d2,d3,d4,x,cd,x,bc,x,ab,x,l2,l1]).
 route([d1,d2,d3,d4,x,r2,r1]).
-
-adv23(X) :- amphipods(A), solution(A, 0, X).
-
-amphipods([a1-c,a2-d,a3-d,a4-a,
-           b1-c,b2-b,b3-c,b4-d,
-           c1-d,c2-a,c3-b,c4-a,
-           d1-b,d2-c,d3-a,d4-b]).

@@ -11,28 +11,28 @@ val adv25 = let
         val changed = ref false
         val region = { base = a, row = 0, col = 0, nrows = NONE, ncols = NONE }
         fun east (i, j, c) =
-            case c of
-                #">" => let val j' = (j + 1) mod m
-                        in if Array2.sub (a, i, j') = #"."
-                           then (
-                               changed := true;
-                               Array2.update (a', i, j', #">")
-                           )
-                           else Array2.update (a', i, j, #">")
-                        end
-              | _    => ()
+            if c = #">"
+            then let val j' = (j + 1) mod m
+                 in if Array2.sub (a, i, j') = #"."
+                    then (
+                        changed := true;
+                        Array2.update (a', i, j', #">")
+                    )
+                    else Array2.update (a', i, j, #">")
+                 end
+            else ()
         fun south (i, j, c) =
-            case c of
-                #"v" => let val i' = (i + 1) mod n
-                        in if Array2.sub (a, i', j) <> #"v" andalso
-                              Array2.sub (a', i', j) = #"."
-                           then (
-                               changed := true;
-                               Array2.update (a', i', j, #"v")
-                           )
-                           else Array2.update (a', i, j, #"v")
-                        end
-              | _    => ()
+            if c = #"v"
+            then let val i' = (i + 1) mod n
+                 in if Array2.sub (a, i', j) <> #"v" andalso
+                       Array2.sub (a', i', j) = #"."
+                    then (
+                        changed := true;
+                        Array2.update (a', i', j, #"v")
+                    )
+                    else Array2.update (a', i, j, #"v")
+                 end
+            else ()
     in Array2.modify Array2.RowMajor (fn _ => #".") a'
      ; Array2.appi Array2.RowMajor east region
      ; Array2.appi Array2.RowMajor south region

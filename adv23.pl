@@ -12,11 +12,10 @@ amphipods([a1-c,a2-d,a3-d,a4-a,
            c1-d,c2-a,c3-b,c4-a,
            d1-b,d2-c,d3-a,d4-b]).
 
-% Slow
-adv23(X) :- amphipods(A), solution(A, 0, X).
+% Slow (~ 10 minutes)
+adv23(X) :- amphipods(A), aggregate_all(min(C), solution(A, 0, C), X).
 
-% solution(State, A, A) :- solved(State).
-solution(State, A, _) :- solved(State), print(A), nl, fail.
+solution(State, A, A) :- solved(State).% print(A), nl.
 solution(State, A, X) :-
     move(State, C, State1),
     A1 is A + C,
@@ -28,7 +27,7 @@ move(State, C, State1) :-
     ownroom(A, R),
     \+ (member(X, R), member(X-B, State), B \= A),
     member(To, R), free(State, To),
-    trymove(State, From, To, N, State1),
+    trymove(State, From, To, N, State1), !,
     cost(A, N, C).
 move(State, C, State1) :-
     member(X, [a,b,c,d]),

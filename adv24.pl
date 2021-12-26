@@ -2,7 +2,13 @@ data([d(13,3,1),d(11,12,1),d(15,9,1),d(-6,12,26),d(15,2,1),d(-8,1,26),d(-4,1,26)
 
 % Which digits can be used to force division
 % (see adv24.sml for more explanation)
-important([n,n,n,y,n,y,y,n,n,n,y,y,y,y]).
+important(X) :- data(D), important(D, [n], X).
+important([_], I, X) :- reverse(I, X).
+important([d(_,B,_),d(A,B1,M)|Ds], I, X) :-
+    AB is A + B,
+    ( between(-8, 8, AB) -> important([d(A,B1,M)|Ds], [y|I], X)
+    ; important([d(A,B1,M)|Ds], [n|I], X)
+    ).
 
 try([], _, [], Z, []) :- Z =:= 0.
 try([d(A,_,M)|Ds], Ws, [y|YNs], Z, [Z1|R]) :-
